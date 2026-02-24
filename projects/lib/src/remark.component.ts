@@ -1,17 +1,27 @@
-import { ChangeDetectionStrategy, Component, computed, contentChildren, input, TemplateRef, viewChildren } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  contentChildren,
+  input,
+  TemplateRef,
+  viewChildren,
+} from '@angular/core';
 import { Root } from 'mdast';
 import remarkParse from 'remark-parse';
 import { Processor, unified } from 'unified';
 import type { Compatible } from 'vfile';
 import { RemarkTemplateDirective } from './remark-template.directive';
 import { RemarkTemplatesService } from './remark-templates.service';
+import { RemarkNodeComponent } from './remark-node.component';
+import { NgStyle, JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'remark',
   templateUrl: './remark.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [RemarkTemplatesService],
-  standalone: false
+  imports: [RemarkNodeComponent, RemarkTemplateDirective, NgStyle, JsonPipe],
 })
 export class RemarkComponent {
   /** The markdown string to render */
@@ -31,19 +41,16 @@ export class RemarkComponent {
     return processor.runSync(tree);
   });
 
-  constructor(
-    public remarkTemplatesService: RemarkTemplatesService
-  ) {
+  constructor(public remarkTemplatesService: RemarkTemplatesService) {
     remarkTemplatesService.templates = computed(() => {
-      const templates: {[nodeType: string]: TemplateRef<any>} = {};
-      for(const template of this.templateQuery()) {
+      const templates: { [nodeType: string]: TemplateRef<any> } = {};
+      for (const template of this.templateQuery()) {
         templates[template.nodeType()] = template.template;
       }
-      for(const template of this.customTemplateQuery()) {
+      for (const template of this.customTemplateQuery()) {
         templates[template.nodeType()] = template.template;
       }
       return templates;
     });
   }
-
 }

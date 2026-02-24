@@ -1,9 +1,6 @@
 import { Directive, TemplateRef, inject, input } from "@angular/core";
 
-@Directive({
-  selector: "[remarkTemplate]",
-  standalone: false
-})
+@Directive({ selector: "[remarkTemplate]" })
 export class RemarkTemplateDirective {
   readonly template = inject<TemplateRef<any>>(TemplateRef);
 
